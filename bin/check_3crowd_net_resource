@@ -11,6 +11,12 @@ progname = File.basename($0)
 opts = Trollop::options do
   version "#{progname} #{CrowdDirector::VERSION}"
 
+  banner <<-EOB
+Usage: #{progname} -e email {-p pass|-f passfile}
+                   -r resource [-j cookiejar]
+
+EOB
+
   opt :email, "CrowdDirector email",
       :short => "-e", :required => true, :type => :string
   opt :pass, "CrowdDirector password",
@@ -19,8 +25,23 @@ opts = Trollop::options do
       :short => "-f", :type => :string
   opt :resource, "Network resource ID to check",
        :short => "-r", :required => true, :type => :string
+
+banner <<-EOB
+          You can locate the resource ID by logging in to the CrowdDirector
+          Dashboard, editing the network resource, and taking the last URL
+          component after a "/" (seems to always be an integer).
+ EOB
+  banner ""
+
   opt :jar, "Path to cookie jar file",
        :short => "-j", :type => :string
+
+banner <<-EOB
+          Optionally specify the path to a "cookie jar" to store a
+          session cookie. Without a cookie jar, each invocation of
+          the check will have to complete the login process.
+EOB
+  banner ""
 end
 
 if opts[:pass] and opts[:passfile]
@@ -38,7 +59,7 @@ if opts[:passfile]
   end
 end
 
-cd = CrowdDirector::Scrape.new(opts[:email], opts[:pass])
+cd = CrowdDirector::Scrape.new(opts[:email], opts[:pass], opts[:jar])
 begin
   nr = cd.network_resources
 rescue CrowdDirector::Error
@@ -52,12 +73,12 @@ if r.nil?
   exit 3
 end
 
-desc = "resource type #{r["resource_type"]}, "
+desc = "id=#{opts[:resource]} type=#{r["resource_type"]} "
 
 if r["dns_base_url"] and !r["dns_base_url"].empty?
-  desc += "dns base host #{r["dns_base_url"]}"
+  desc += "dns_host=#{r["dns_base_url"]}"
 elsif r["base_url"] and !r["base_url"].empty?
-  desc += "base url #{r["base_url"]}"
+  desc += "base_url=#{r["base_url"]}"
 else
   puts "UNKNOWN: resource id #{opts[:resource]} has unknown type, #{r.inspect}"
   exit 3
