@@ -44,7 +44,7 @@ logging in or scraping the dashboard site.
 ## Nagios plugin
 
 This library comes with a Nagios plugin to check the health state
-of a resource. Usage:
+of a resource.
 
     Usage: check_3crowd_net_resource -e email {-p pass|-f passfile}
                        -r resource [-j cookiejar]
