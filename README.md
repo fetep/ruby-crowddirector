@@ -66,13 +66,13 @@ of a resource.
 
 Example run:
 
-    $ check_3crowd_net_resource -e petef@example.org -p "sekret" -r 2151 -j /tmp/cookies
+    $ check_3crowd_net_resource -e foo@example.org -p "sekret" -r 2151 -j /tmp/cookiejar
     OK: id=2151 type=server dns_host=1.2.3.4 is up (state 1)
     $ echo $?
     0
 
     $ umask 0077 && echo "sekret" > .pass
-    $ check_3crowd_net_resource -e petef@example.org -f .pass -r 2152 -j /tmp/cookies
-    CRITICAL: id=2153 type=server dns_host=1.2.3.5 is down (state 0)
+    $ check_3crowd_net_resource -e foo@example.org -f .pass -r 2152 -j /tmp/cookiejar
+    CRITICAL: id=2152 type=server dns_host=1.2.3.5 is down (state 0)
     $ echo $?
     2
